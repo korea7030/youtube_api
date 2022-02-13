@@ -69,8 +69,8 @@ class FactoryYoutubeApi:
         df = pd.DataFrame({'title': title_list, 'channel_title': channel_title_list, 'published_at': publish_at_list, 'view_count': view_count_list, 'tags': tag_list})
         return df
     
-    def dataframe_to_dsv(self, data_frame):
-        data_frame.to_csv('./test.csv', sep=',', na_rep='', index=False)
+    def dataframe_to_dsv(self, data_frame, query_string):
+        data_frame.to_csv('./{0}.csv'.format(query_string), sep='|', na_rep='', index=False, encoding='utf-8-sig')
 
 if __name__ == '__main__':
     # 검색어
@@ -88,6 +88,6 @@ if __name__ == '__main__':
     factory_api = FactoryYoutubeApi(query_string, api_key)
     video_ids = factory_api.get_youtube_video_ids()
     video_dataframe = factory_api.get_video_info_use_video_id(video_ids)
-    factory_api.dataframe_to_dsv(video_dataframe)
+    factory_api.dataframe_to_dsv(video_dataframe, query_string)
 
     print('Done')
