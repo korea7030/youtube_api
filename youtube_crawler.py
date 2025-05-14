@@ -40,6 +40,7 @@ class FactoryYoutubeApi:
 
     def get_video_info_use_video_id(self, video_ids):
         title_list = []
+        video_link_list = []
         channel_title_list = []
         view_count_list = []
         publish_at_list = []
@@ -54,6 +55,8 @@ class FactoryYoutubeApi:
 
             # 제목
             title_list.append(video_id_list['items'][0]['snippet'].get('title'))
+            # 영상 링크
+            video_link_list.append(f'https://www.youtube.com/watch?v={video_id}')
             # Channel title 입력
             channel_title_list.append(video_id_list['items'][0]['snippet'].get('channelTitle'))
             # 영상 업로드 날짜
@@ -66,7 +69,7 @@ class FactoryYoutubeApi:
         # for title_plus_rating in zip(title_list, channel_title_list, publish_at_list, view_count_list, tag_list):
         #     dicts[title_plus_rating[0]] = int(title_plus_rating[1])
         # sdicts = sorted(dicts.items(), key=operator.itemgetter(1), reverse=True)
-        df = pd.DataFrame({'title': title_list, 'channel_title': channel_title_list, 'published_at': publish_at_list, 'view_count': view_count_list, 'tags': tag_list})
+        df = pd.DataFrame({'title': title_list, 'video_link': video_link_list, 'channel_title': channel_title_list, 'published_at': publish_at_list, 'view_count': view_count_list, 'tags': tag_list})
         return df
     
     def dataframe_to_dsv(self, data_frame, query_string):
@@ -88,6 +91,9 @@ if __name__ == '__main__':
     factory_api = FactoryYoutubeApi(query_string, api_key)
     video_ids = factory_api.get_youtube_video_ids()
     video_dataframe = factory_api.get_video_info_use_video_id(video_ids)
+
+    video_dataframe['published_at'] = pd.to_datetime(video_dataframe['published_at'])
+    video_dataframe = video_dataframe.sort_values(by='published_at', ascending=True)
     factory_api.dataframe_to_dsv(video_dataframe, query_string)
 
     print('Done')
